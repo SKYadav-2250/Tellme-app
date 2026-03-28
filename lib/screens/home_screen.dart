@@ -3,13 +3,13 @@ import 'dart:developer' as dev;
 import 'dart:math';
 // import 'dart:nativewrappers/_internal/vm/lib/developer.dart';
 
-import 'package:chatting_app/api/api.dart';
-import 'package:chatting_app/helper/dialog.dart';
-import 'package:chatting_app/main.dart';
-import 'package:chatting_app/models/chat_user.dart';
-// import 'package:chatting_app/screens/auth_screen.dart/login_screen.dart';
-import 'package:chatting_app/screens/profile.dart';
-import 'package:chatting_app/widgets/chat_user_card.dart';
+import 'package:tellme/api/api.dart';
+import 'package:tellme/helper/dialog.dart';
+import 'package:tellme/main.dart';
+import 'package:tellme/models/chat_user.dart';
+// import 'package:tellme/screens/auth_screen.dart/login_screen.dart';
+import 'package:tellme/screens/profile.dart';
+import 'package:tellme/widgets/chat_user_card.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -85,31 +85,39 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         child: Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             title: AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               child:
                   _isSearch
                       ? TextField(
-                        key: ValueKey(1),
+                        key: const ValueKey(1),
                         controller: _searchController,
                         autofocus: true, // Focus when search opens
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
-                            vertical: md.height * .01,
-                            horizontal: md.width * .25,
+                            vertical: md.height * .015,
+                            horizontal: md.width * .05,
                           ), // R
-                          hintText: "Search...",
+                          hintText: "Search chat...",
+                          hintStyle: const TextStyle(color: Colors.grey),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none,
                           ),
-                          prefixIcon: Icon(Icons.search),
+                          filled: true,
+                          fillColor: Theme.of(context).cardColor,
+                          prefixIcon: const Icon(
+                            Icons.search_rounded,
+                            color: Colors.grey,
+                          ),
                         ),
                         onChanged: (value) {
                           setState(() {
                             _searchList.clear();
-                            // _searchList.addAll(list.where((user) =>
-                            //     user.name!.toLowerCase().contains(value.toLowerCase())));
                             for (var i in _list) {
                               if (i.name!.toLowerCase().contains(
                                     value.toLowerCase(),
@@ -128,9 +136,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       )
                       : Text(
-                        'Home',
-                        key: ValueKey(2),
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        'tellme',
+                        key: const ValueKey(2),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 26,
+                          letterSpacing: -0.5,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
             ),
             actions: [
@@ -157,11 +170,26 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
 
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: FloatingActionButton.extended(
             onPressed: () async {
               _addChatuserDialog();
             },
-            child: const Icon(Icons.add),
+            elevation: 4,
+            backgroundColor: const Color(0xFF6200EA),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            icon: const Icon(
+              Icons.person_add_alt_1_rounded,
+              color: Colors.white,
+            ),
+            label: const Text(
+              'Add User',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
 
           body: StreamBuilder(
@@ -169,13 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context, snapshot) {
               if (snapshot.data?.docs != null) {
                 dev.log('apis call is ${snapshot.data?.docs}');
-                // switch (snapshot.connectionState) {
-                //   case ConnectionState.waiting:
-                //   case ConnectionState.none:
-                // return const Center(child: CircularProgressIndicator());
 
-                //   case ConnectionState.active:
-                //   case ConnectionState.done:
                 return StreamBuilder(
                   stream: Apis.getAllUsers(
                     snapshot.data?.docs.map((element) => element.id).toList() ??

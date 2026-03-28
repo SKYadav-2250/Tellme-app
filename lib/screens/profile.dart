@@ -1,13 +1,13 @@
 // import 'dart:nativewrappers/_internal/vm/lib/math_patch.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chatting_app/api/api.dart';
-import 'package:chatting_app/helper/dialog.dart';
-import 'package:chatting_app/models/chat_user.dart';
-import 'package:chatting_app/screens/auth_screen.dart/login_screen.dart';
+import 'package:tellme/api/api.dart';
+import 'package:tellme/helper/dialog.dart';
+import 'package:tellme/models/chat_user.dart';
+import 'package:tellme/screens/auth_screen.dart/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:chatting_app/main.dart';
+import 'package:tellme/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:io';
@@ -30,193 +30,257 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: AppBar(title: Text('Profile'), elevation: 2),
-
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () async {
-            Dialogs.showProgressbar(context);
-            await Apis.updateOnlineStatus(false);
-            await Apis.auth.signOut().then((value) async {
-              await GoogleSignIn().signOut().then((value) {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Apis.auth = FirebaseAuth.instance;
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
-                );
-              });
-            });
-          },
-          label: Text('Sign out'),
-          icon: Icon(Icons.logout),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'My Profile',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout, color: Colors.redAccent),
+              tooltip: 'Sign out',
+              onPressed: () async {
+                Dialogs.showProgressbar(context);
+                await Apis.updateOnlineStatus(false);
+                await Apis.auth.signOut().then((value) async {
+                  await GoogleSignIn().signOut().then((value) {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    Apis.auth = FirebaseAuth.instance;
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                    );
+                  });
+                });
+              },
+            ),
+          ],
         ),
-
         body: SingleChildScrollView(
           child: Form(
             key: _formkey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: md.height * .05),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: md.width * .22),
-                  child: Stack(
-                    children: [
-                      _image != null
-                          ? ClipRRect(
-                            borderRadius: BorderRadius.circular(md.height * .5),
-
-                            child: Image.file(
-                              File(_image!),
-                              // color: Colors.red,
-                              height: md.height * .25, // Increased size
-                              width: md.height * .25,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                          : ClipRRect(
-                            borderRadius: BorderRadius.circular(md.height * .5),
-
-                            child: CachedNetworkImage(
-                              // color: Colors.red,
-                              height: md.height * .25, // Increased size
-                              width: md.height * .25,
-                              fit: BoxFit.cover,
-                              imageUrl: widget.user.image.toString(),
-
-                              placeholder:
-                                  (context, imageUrl) =>
-                                      const CircularProgressIndicator(),
-                              errorWidget:
-                                  (context, url, error) => const CircleAvatar(
-                                    backgroundColor: Colors.grey,
-                                    child: Icon(CupertinoIcons.add),
+                SizedBox(height: md.height * 0.03),
+                // Premium Profile Card
+                Center(
+                  child: Container(
+                    width: md.width * 0.85,
+                    padding: EdgeInsets.symmetric(vertical: md.height * 0.04),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withAlpha(50) : Colors.black.withAlpha(15),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Stack(
+                          children: [
+                            _image != null
+                                ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                    md.height * 0.1,
                                   ),
+                                  child: Image.file(
+                                    File(_image!),
+                                    height: md.height * 0.18,
+                                    width: md.height * 0.18,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                                : ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                    md.height * 0.1,
+                                  ),
+                                  child: CachedNetworkImage(
+                                    height: md.height * 0.18,
+                                    width: md.height * 0.18,
+                                    fit: BoxFit.cover,
+                                    imageUrl: widget.user.image.toString(),
+                                    placeholder:
+                                        (context, imageUrl) =>
+                                            const CircularProgressIndicator(),
+                                    errorWidget:
+                                        (context, url, error) =>
+                                            const CircleAvatar(
+                                              backgroundColor: Colors.grey,
+                                              child: Icon(
+                                                CupertinoIcons.person,
+                                                size: 50,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                  ),
+                                ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: MaterialButton(
+                                elevation: 3,
+                                onPressed: _showModelBottomSheet,
+                                color: const Color(0xFF6200EA),
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(10),
+                                child: const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: md.height * 0.03),
+                        Text(
+                          widget.user.email.toString(),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: md.height * 0.04),
+
+                // Edit Details Section
+                Container(
+                  width: md.width * 0.85,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withAlpha(50) : Colors.black.withAlpha(15),
+                        blurRadius: 15,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // Name Input
+                      TextFormField(
+                        initialValue: widget.user.name,
+                        onSaved:
+                            (newValue) => Apis.mySelf!.name = newValue ?? '',
+                        validator:
+                            (value) =>
+                                value != null && value.isNotEmpty
+                                    ? null
+                                    : 'Required field',
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.person,
+                            color: Color(0xFF6200EA),
+                          ),
+                          hintText: 'e.g. John Doe',
+                          labelText: 'Name',
+                          labelStyle: const TextStyle(color: Color(0xFF6200EA)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF6200EA),
+                              width: 2,
                             ),
                           ),
+                        ),
+                      ),
 
-                      Positioned(
-                        // left: 80,
-                        right: 18,
-                        // top: 80,
-                        bottom: 20,
+                      const SizedBox(height: 24),
 
-                        child: Container(
-                          height: md.height * .05,
-                          width: md.height * .05,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: const Color.fromARGB(255, 229, 209, 234),
+                      // About Input
+                      TextFormField(
+                        initialValue: widget.user.about,
+                        onSaved:
+                            (newValue) => Apis.mySelf!.about = newValue ?? '',
+                        validator:
+                            (value) =>
+                                value != null && value.isNotEmpty
+                                    ? null
+                                    : 'Required field',
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.info_outline,
+                            color: Color(0xFF6200EA),
                           ),
-                          child: IconButton(
-                            onPressed: _showModelBottomSheet,
-                            icon: Icon(Icons.camera_alt),
+                          hintText: 'e.g. Feeling happy',
+                          labelText: 'About',
+                          labelStyle: const TextStyle(color: Color(0xFF6200EA)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF6200EA),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      // Update Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            if (_formkey.currentState!.validate()) {
+                              _formkey.currentState!.save();
+                              await Apis.updateUserData();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'User details updated successfully!',
+                                  ),
+                                  backgroundColor: Color(0xFF6200EA),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6200EA),
+                            foregroundColor: Colors.white,
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          label: const Text(
+                            'Update Profile',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          icon: const Icon(Icons.save),
                         ),
                       ),
                     ],
                   ),
                 ),
-
-                SizedBox(height: md.height * .03),
-
-                Text(
-                  widget.user.email.toString(),
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                SizedBox(height: md.height * .03),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: md.width * .05),
-                  child: TextFormField(
-                    initialValue: widget.user.name,
-                    onSaved: (newValue) {
-                      if (newValue == null) {
-                        return;
-                      } else {
-                        Apis.mySelf!.name = newValue;
-                      }
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Required field';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person),
-
-                      hintText: 'eg : user name',
-                      label: Text('Name'),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: md.height * .03),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: md.width * .05),
-                  child: TextFormField(
-                    onSaved: (newValue) {
-                      if (newValue == null) {
-                        return;
-                      } else {
-                        Apis.mySelf!.about = newValue;
-                      }
-                    },
-                    validator: (value) {
-                      if (value != null && value.isNotEmpty) {
-                        return null;
-                      }
-                      return 'required field';
-                    },
-
-                    initialValue: widget.user.about,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.info_outline),
-
-                      hintText: 'eg : About user',
-                      label: Text('About'),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: md.height * .03),
-
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    if (_formkey.currentState!.validate()) {
-                      _formkey.currentState!.save();
-                      print('valid working');
-                      await Apis.updateUserData();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('User Detail Updated Successfully'),
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-                  ),
-
-                  label: Text('Update'),
-                  icon: Icon(Icons.edit),
-                ),
-                // Form(child:
-                // )
+                SizedBox(height: md.height * 0.05),
               ],
             ),
           ),
@@ -227,80 +291,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showModelBottomSheet() {
     showModalBottomSheet(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+      ),
       context: context,
       builder: (context) {
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: md.width * .10),
-          color: Colors.white,
+          padding: EdgeInsets.symmetric(
+            horizontal: md.width * .10,
+            vertical: md.height * .03,
+          ),
+          color: Theme.of(context).scaffoldBackgroundColor,
           height: md.height * .3,
-          width: double.infinity,
-
           child: Column(
             children: [
-              SizedBox(height: md.height * .02),
-
-              Text(
+              const Text(
                 'Pick Profile Picture',
                 style: TextStyle(
-                  fontSize: 20,
-                  color: const Color.fromARGB(255, 67, 6, 78),
+                  fontSize: 22,
+                  color: Color(0xFF6200EA),
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
-              SizedBox(height: md.height * .03),
-
+              SizedBox(height: md.height * .04),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: () async {
+                  _bottomSheetButton(
+                    onTap: () async {
                       final ImagePicker picker = ImagePicker();
                       final XFile? image = await picker.pickImage(
                         source: ImageSource.gallery,
                       );
                       if (image != null) {
-                        print('image   ${image.path}');
                         setState(() {
                           _image = image.path;
                         });
                         Apis.updateProfilePic(File(_image!));
                         Navigator.pop(context);
                       }
-                      // Capture a photo.
                     },
-                    style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(),
-                      fixedSize: Size(md.width * .3, md.height * .10),
-                    ),
-
-                    child: Image.asset('assets/images/gallery.png', height: 60),
+                    icon: Icons.photo_library_outlined,
+                    label: 'Gallery',
                   ),
-
-                  ElevatedButton(
-                    onPressed: () async {
+                  _bottomSheetButton(
+                    onTap: () async {
                       final ImagePicker picker = ImagePicker();
                       final XFile? image = await picker.pickImage(
                         source: ImageSource.camera,
                       );
                       if (image != null) {
-                        print('image   ${image.path}');
                         setState(() {
                           _image = image.path;
                         });
                         Apis.updateProfilePic(File(_image!));
-
                         Navigator.pop(context);
                       }
-                      // Capture a photo.
                     },
-                    style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(),
-                      fixedSize: Size(md.width * .3, md.height * .10),
-                    ),
-                    child: Image.asset('assets/images/camera.png', height: 60),
+                    icon: Icons.camera_alt_outlined,
+                    label: 'Camera',
                   ),
                 ],
               ),
@@ -308,6 +360,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _bottomSheetButton({
+    required VoidCallback onTap,
+    required IconData icon,
+    required String label,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        height: 100,
+        width: 100,
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Colors.white12 : Colors.grey.shade300),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: const Color(0xFF6200EA)),
+            const SizedBox(height: 8),
+            Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+          ],
+        ),
+      ),
     );
   }
 }

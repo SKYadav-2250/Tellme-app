@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 import 'dart:io';
-import 'package:chatting_app/api/api_notification.dart';
-import 'package:chatting_app/models/chat_user.dart';
-import 'package:chatting_app/models/message.dart' as chat_app_message;
+import 'package:tellme/api/api_notification.dart';
+import 'package:tellme/models/chat_user.dart';
+import 'package:tellme/models/message.dart' as chat_app_message;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';

@@ -1,7 +1,7 @@
-import 'package:chatting_app/main.dart';
-import 'package:chatting_app/models/chat_user.dart';
+import 'package:tellme/main.dart';
+import 'package:tellme/models/chat_user.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chatting_app/screens/chat_user_profile.dart';
+import 'package:tellme/screens/chat_user_profile.dart';
 
 import 'package:flutter/material.dart';
 

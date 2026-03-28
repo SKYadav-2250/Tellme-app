@@ -1,11 +1,11 @@
-import 'package:chatting_app/api/api.dart';
-import 'package:chatting_app/helper/dialog.dart';
-import 'package:chatting_app/helper/my_date_util.dart';
-import 'package:chatting_app/models/message.dart';
+import 'package:tellme/api/api.dart';
+import 'package:tellme/helper/dialog.dart';
+import 'package:tellme/helper/my_date_util.dart';
+import 'package:tellme/models/message.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:flutter/material.dart';
-import 'package:chatting_app/main.dart';
+import 'package:tellme/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/services.dart';
 
@@ -44,43 +44,37 @@ class _MessageCardState extends State<MessageCard> {
       children: [
         Flexible(
           child: Container(
-            padding: EdgeInsets.all(md.width * .02),
+            padding: EdgeInsets.all(md.width * .03),
             margin: EdgeInsets.symmetric(
               horizontal: md.width * .04,
-              vertical: md.width * .04,
+              vertical: md.height * .01,
             ),
-
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(20),
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
                 bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(4),
               ),
-              color: const Color.fromARGB(255, 171, 199, 246),
-              border: Border.all(
-                color: const Color.fromARGB(255, 85, 139, 248),
-              ),
+              color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF2C2C35) : const Color(0xFFE8ECEF),
             ),
-            child:
-                widget.message.type == MessageType.image
-                    ? CachedNetworkImage(
+            child: widget.message.type == MessageType.image
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: CachedNetworkImage(
                       fit: BoxFit.cover,
                       imageUrl: widget.message.msg,
-
-                      placeholder:
-                          (context, imageUrl) =>
-                              const CircularProgressIndicator(),
-                      errorWidget:
-                          (context, url, error) =>
-                              const Icon(Icons.image, size: 70),
-                    )
-                    : Text(
-                      widget.message.msg,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
+                      placeholder: (context, imageUrl) => const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => const Icon(Icons.image, size: 70),
                     ),
+                  )
+                : Text(
+                    widget.message.msg,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
+                  ),
           ),
         ),
 
@@ -91,7 +85,7 @@ class _MessageCardState extends State<MessageCard> {
               context: context,
               time: widget.message.sent,
             ),
-            style: TextStyle(fontSize: 12, color: Colors.black54),
+            style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6)),
           ),
         ),
       ],
@@ -117,51 +111,44 @@ class _MessageCardState extends State<MessageCard> {
                 context: context,
                 time: widget.message.sent,
               ),
-              style: TextStyle(fontSize: 12, color: Colors.black54),
+              style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6)),
             ),
           ],
         ),
 
         Flexible(
           child: Container(
-            padding: EdgeInsets.all(md.width * .02),
+            padding: EdgeInsets.all(md.width * .03),
             margin: EdgeInsets.symmetric(
               horizontal: md.width * .04,
-              vertical: md.width * .04,
+              vertical: md.height * .01,
             ),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
                 bottomLeft: Radius.circular(20),
-                topLeft: Radius.circular(20),
+                bottomRight: Radius.circular(4),
               ),
-              border: Border.all(color: const Color.fromARGB(255, 84, 252, 90)),
-
-              color: const Color.fromARGB(255, 194, 251, 196),
+              color: Color(0xFF6200EA),
             ),
-            child:
-                widget.message.type == MessageType.image
-                    ? ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: CachedNetworkImage(
-                        fit: BoxFit.cover,
-                        imageUrl: widget.message.msg,
-
-                        placeholder:
-                            (context, imageUrl) =>
-                                const CircularProgressIndicator(),
-                        errorWidget:
-                            (context, url, error) =>
-                                const Icon(Icons.image, size: 70),
-                      ),
-                    )
-                    : Text(
-                      widget.message.msg,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
+            child: widget.message.type == MessageType.image
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: CachedNetworkImage(
+                      fit: BoxFit.cover,
+                      imageUrl: widget.message.msg,
+                      placeholder: (context, imageUrl) => const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => const Icon(Icons.image, size: 70, color: Colors.white),
                     ),
+                  )
+                : Text(
+                    widget.message.msg,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
           ),
         ),
       ],
@@ -183,17 +170,16 @@ class _MessageCardState extends State<MessageCard> {
           ),
 
           children: [
-            Container(
-              height: 4,
-              margin: EdgeInsets.symmetric(
-                horizontal: md.width * .3,
-                vertical: md.height * .010,
-              ),
-
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-
-                color: Colors.grey.withOpacity(.5),
+            Align(
+              alignment: Alignment.center,
+              child: Container(
+                height: 5,
+                width: 50,
+                margin: EdgeInsets.symmetric(vertical: md.height * .015),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Theme.of(context).dividerColor,
+                ),
               ),
             ),
 
@@ -247,7 +233,7 @@ class _MessageCardState extends State<MessageCard> {
                   },
                 ),
             Divider(
-              color: const Color.fromARGB(226, 45, 44, 44),
+              color: Theme.of(context).dividerColor,
               endIndent: md.width * .04,
               indent: md.width * .04,
             ),
@@ -276,7 +262,7 @@ class _MessageCardState extends State<MessageCard> {
               ),
             if (widget.message.type == MessageType.text && itsuser)
               Divider(
-                color: Colors.black,
+                color: Theme.of(context).dividerColor,
                 endIndent: md.width * .04,
                 indent: md.width * .04,
               ),
@@ -394,7 +380,11 @@ class _OtionItem extends StatelessWidget {
             Flexible(
               child: Text(
                 title,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],

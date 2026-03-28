@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:chatting_app/api/api.dart';
+import 'package:tellme/api/api.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 // import 'package:googleapis/storage/v1.dart'as serviceControl;
 import 'package:googleapis_auth/auth_io.dart' as auth;
-import 'package:chatting_app/models/chat_user.dart';
-import 'package:chatting_app/models/message.dart';
+import 'package:tellme/models/chat_user.dart';
+import 'package:tellme/models/message.dart';
 
 class ApiNotification {
   static Future<String> getAccessToken() async {
